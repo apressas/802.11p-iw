@@ -1,3 +1,4 @@
 Build modified IW tool with "make" and run command "iw set txq_params <queue type in [0,1,2,3]|off>" to set an AC to be passed down to ath9k via nl80211.
-To be used with modified kernel if MAC properties adaptation is needed in OCB (Car-to-Car) mode.
+To be used with modified kernel if MAC properties adaptation is needed in OCB (Car-to-Car) mode. The new command has been added in "phy.c" and can be modified
+to use custom CW, AIFS, TXOP values for TX Queues.
 
