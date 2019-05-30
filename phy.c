@@ -495,3 +495,79 @@ COMMAND(set, antenna, "<bitmap> | all | <tx bitmap> <rx bitmap>",
 	NL80211_CMD_SET_WIPHY, 0, CIB_PHY, handle_antenna,
 	"Set a bitmap of allowed antennas to use for TX and RX.\n"
 	"The driver may reject antenna configurations it cannot support.");
+
+static int handle_txq_params(struct nl80211_state *state,
+	                            struct nl_cb *cb, struct nl_msg *msg,
+	                            int argc, char **argv)
+{
+	   __u8 queue, aifs;
+	   __u16 txop, cwmin, cwmax;
+
+	   struct nlattr *nl_txqs;
+
+	   if (argc != 1)
+	         return 1;
+
+	   if (strcmp("off", argv[0]) == 0)
+	         return 0;
+
+
+	   queue = strtoul(argv[0], NULL, 10);
+
+	   switch(queue) {
+	   case 0:
+	   				printf("configuring TX queue for VO\n");
+	          txop = 0;
+	          cwmin = 7;
+	          cwmax = 15;
+	          aifs = 2;
+            break;
+	   case 1:
+		 	     printf("configuring TX queue for VI\n");
+           txop = 0;
+	         cwmin = 15;
+           cwmax = 31;
+			     aifs = 2;
+	         break;
+	  case 2:
+	         printf("configuring TX queue for BE\n");
+	         txop = 0;
+	         cwmin = 31;
+	         cwmax = 1023;
+	         aifs = 3;
+	         break;
+	  case 3:
+	         printf("configuring TX queue for BK\n");
+	         txop = 0;
+	         cwmin = 31;
+	         cwmax = 1023;
+	         aifs = 7;
+	         break;
+	   default:
+	         printf("switch() error\n");
+	         return -1;
+	       }
+
+	   nl_txqs = nla_nest_start(msg, NL80211_ATTR_WIPHY_TXQ_PARAMS);
+	   if (!nl_txqs)
+	       return -ENOBUFS;
+
+	   struct nlattr *nl_txq = nla_nest_start(msg, queue);
+	   NLA_PUT_U8(msg, NL80211_TXQ_ATTR_QUEUE, queue);
+	   NLA_PUT_U16(msg, NL80211_TXQ_ATTR_TXOP, txop);
+	   NLA_PUT_U16(msg, NL80211_TXQ_ATTR_CWMIN, cwmin);
+	   NLA_PUT_U16(msg, NL80211_TXQ_ATTR_CWMAX, cwmax);
+	   NLA_PUT_U8(msg, NL80211_TXQ_ATTR_AIFS, aifs);
+	   nla_nest_end(msg, nl_txq);
+
+	   nla_nest_end(msg, nl_txqs);
+
+	   return 0;
+
+		 nla_put_failure:
+	       return -ENOBUFS;
+	 }
+
+	COMMAND(set, txq_params, "<queue type in [0,1,2,3]|off>",
+	       NL80211_CMD_SET_WIPHY, 0, CIB_PHY, handle_txq_params,
+	       "Set txq parameters.");
