@@ -1,15 +1,3 @@
+Build modified IW tool with "make" and run command "iw set txq_params <queue type in [0,1,2,3]|off>" to set an AC to be passed down to ath9k via nl80211.
+To be used with modified kernel if MAC properties adaptation is needed in OCB (Car-to-Car) mode.
 
-This is 'iw', a tool to use nl80211.
-
-
-To build iw, just enter 'make'. If that fails, set the
-PKG_CONFIG_PATH environment variable to allow the Makefile
-to find libnl.
-
-
-'iw' is currently maintained at http://git.sipsolutions.net/iw.git/,
-some more documentation is available at
-http://wireless.kernel.org/en/users/Documentation/iw.
-
-Please send all patches to Johannes Berg <johannes@sipsolutions.net>
-and CC linux-wireless@vger.kernel.org for community review.
